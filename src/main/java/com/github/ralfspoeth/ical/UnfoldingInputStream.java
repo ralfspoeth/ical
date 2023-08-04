@@ -4,7 +4,6 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
-import java.util.Arrays;
 import java.util.Objects;
 
 public class UnfoldingInputStream extends FilterInputStream implements AutoCloseable {
@@ -16,8 +15,7 @@ public class UnfoldingInputStream extends FilterInputStream implements AutoClose
     private static final byte HTAB = '\t';
 
     public UnfoldingInputStream(InputStream in) {
-        super(in);
-        Arrays.fill(buffer, -1);
+        super(new PushbackInputStream(in, 2));
     }
 
     @Override
@@ -25,30 +23,23 @@ public class UnfoldingInputStream extends FilterInputStream implements AutoClose
         return false;
     }
 
-    private final int[] buffer = new int[3];
-    private transient int mark = -1;
-
     @Override
     public int read() throws IOException {
-        int last;
-        if (mark>-1) {
-            last = buffer[mark--];
-        } else {
-            last = in.read();
-            buffer[++mark] = last;
-            if (last == CR) {
-                var next = in.read();  // read ahead
-
-                if (next == LF) {
-                    var nextnext = in.read(); // read ahead
-                    buffer[++mark] = next;
-                    if (nextnext == WS || nextnext == HTAB) {
-                        mark = -1;
-                        last = in.read();
-                    } else {
-                        buffer[++mark] = nextnext;
-                    }
+        var pbis = (PushbackInputStream)in;
+        int last = pbis.read();
+        if (last == CR) {
+            var next = pbis.read();  // read ahead
+            if (next == LF) {
+                var nextnext = pbis.read(); // read ahead
+                if (nextnext == WS || nextnext == HTAB) {
+                    last = pbis.read();
+                } else if (nextnext > -1) {
+                    pbis.unread(nextnext);
+                    pbis.unread(next);
                 }
+            }
+            else if (next > -1) {
+                pbis.unread(next);
             }
         }
         return last;
@@ -68,7 +59,7 @@ public class UnfoldingInputStream extends FilterInputStream implements AutoClose
             b[off++] = (byte) last;
             count++;
         }
-        return count;
+        return count==0?-1:count;
     }
 
     @Override

@@ -2,12 +2,11 @@ package com.github.ralfspoeth.ical;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-
-import static org.junit.jupiter.api.Assertions.*;
+import java.nio.charset.StandardCharsets;
 
 class ParserTest {
 
@@ -29,6 +28,34 @@ class ParserTest {
              var out = new FileOutputStream("test1.out")
         ) {
             uf.transferTo(out);
+        }
+    }
+
+
+    @Test
+    void testMinus1() throws IOException {
+        try (var is = new UnfoldingInputStream(getClass().getResourceAsStream("/test1.ics"))) {
+            int ch;
+            while((ch=is.read())>-1); // advance till EOF
+            try {
+                ch += is.read();
+                ch += is.read();
+                ch += is.read();
+                System.out.printf("ch is %d%n", ch);
+            }
+            catch(IOException ioex) {
+                ioex.printStackTrace();
+                throw ioex;
+            }
+        }
+    }
+
+    @Test
+    void linesTest() throws IOException {
+        try (var is = new UnfoldingInputStream(getClass().getResourceAsStream("/test1.ics"));
+             var rdr = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))
+        ) {
+            rdr.lines().forEach(System.out::println);
         }
     }
 }
