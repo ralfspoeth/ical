@@ -22,7 +22,7 @@ BEGIN:VEVENT
 ATTENDEE;CN="Heilig Stefanie";RSVP=TRUE:mailto:stefanie.heilig@profidata.co
 	m
 ATTENDEE;CN="Japp Hendrik";RSVP=TRUE:mailto:Hendrik.Japp@profidata.com
-ATTENDEE;CN="Spöth Ralf";RSVP=TRUE:mailto:ralf.spoeth@profidata.com
+ATTENDEE;CN="Spöth Ralf";RSVP=TRUE:mailto:ralf.spoeth@profidatag.com
 CLASS:PUBLIC
 CREATED:20230803T092513Z
 DESCRIPTION:*	Anpassung bei Storno-Trx die eine Trx stornieren mit historis
