@@ -1,2 +1,2 @@
 # preserve CRLF for .ics files
-*.ics test eol=crlf
+*.ics binary eol=crlf
