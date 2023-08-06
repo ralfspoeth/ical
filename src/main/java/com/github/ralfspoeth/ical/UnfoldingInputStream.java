@@ -6,13 +6,7 @@ import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.util.Objects;
 
-public class UnfoldingInputStream extends FilterInputStream implements AutoCloseable {
-
-    private static final byte CR = 13;
-    private static final byte LF = 10;
-
-    private static final byte WS = ' ';
-    private static final byte HTAB = '\t';
+final class UnfoldingInputStream extends FilterInputStream implements IO, AutoCloseable {
 
     public UnfoldingInputStream(InputStream in) {
         super(new PushbackInputStream(in, 2));
